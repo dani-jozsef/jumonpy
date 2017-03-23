@@ -2,7 +2,7 @@
   {
     "selected" : false,
     "frame" : "{{0, 0}, {320, 320}}",
-    "class" : "spellGenGui",
+    "class" : "View",
     "nodes" : [
       {
         "selected" : false,
