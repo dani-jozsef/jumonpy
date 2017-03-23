@@ -2,7 +2,7 @@
   {
     "selected" : false,
     "frame" : "{{0, 0}, {320, 320}}",
-    "class" : "View",
+    "class" : "spellGenGui",
     "nodes" : [
       {
         "selected" : false,
@@ -76,7 +76,7 @@
         "attributes" : {
           "flex" : "W",
           "continuous" : true,
-          "action" : "sld_iter_update",
+          "action" : "self.sld_iter_update",
           "frame" : "{{60, 143}, {200, 34}}",
           "class" : "Slider",
           "uuid" : "A828A7C7-0854-4EB7-B5B2-CED0ABB75C2D",
@@ -101,7 +101,7 @@
           "border_width" : 1,
           "custom_attributes" : "{ 'enabled':False }",
           "title" : "⛔️",
-          "action" : "btn_hash_push",
+          "action" : "self.btn_hash_push",
           "font_bold" : false,
           "class" : "Button",
           "name" : "btn_hash",
@@ -187,7 +187,7 @@
           "border_color" : "RGBA(0.808962,0.808962,0.808962,1.000000)",
           "border_width" : 1,
           "title" : "🔐",
-          "action" : "btn_secret_push",
+          "action" : "self.btn_secret_push",
           "class" : "Button",
           "name" : "btn_secret",
           "flex" : "RT"
