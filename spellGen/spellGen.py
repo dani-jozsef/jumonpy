@@ -51,21 +51,30 @@ class Magic(object):
 
 class spellGenGui(ui.View):
 	
-	def did_load( self ):
+	def __init__( self, viewname ):
+		self.view = ui.load_view(viewname)
 		self.magic = Magic(mysalt, myiter)
 		
-		self.txt_service = self['txt_service']
-		self.txt_account = self['txt_account']
-		self.sld_iter = self['sld_iter']
-		self.lbl_iter = self['lbl_iterdisp']
-		self.btn_hash = self['btn_hash']
-		self.txv_spell = self['txv_spell']
+		self.txt_service = self.view['txt_service']
+		self.txt_account = self.view['txt_account']
+		self.sld_iter = self.view['sld_iter']
+		self.lbl_iter = self.view['lbl_iterdisp']
+		self.btn_hash = self.view['btn_hash']
+		self.txv_spell = self.view['txv_spell']
 
 		self.iter = 0
 		self.secret = keychain.get_password(appname,appname)
 
 		if self.secret is not None:
 			self.activate_button()
+	
+	def present( self ):
+		if ui.get_screen_size()[1] >= 768:
+			# iPad
+			self.view.present('sheet')
+		else:
+			# iPhone
+			self.view.present()
 
 	def precook_string( self, rawstring ):
 		return rawstring.casefold().strip()
@@ -118,12 +127,5 @@ class spellGenGui(ui.View):
 			self.secret = None
 			self.deactivate_button()
 
-mainview = ui.load_view(appname)
-
-if ui.get_screen_size()[1] >= 768:
-	# iPad
-	mainview.present('sheet')
-else:
-	# iPhone
-	mainview.present()
-
+gui = spellGenGui(appname)
+gui.present()
