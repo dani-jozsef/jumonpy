@@ -42,7 +42,7 @@ class Magic(object):
 		spell=''
 		while hash > 0:
 			mod = hash % self.base
-			spell = syllabs[mod] + spell
+			spell = self.syllabs[mod] + spell
 			hash = hash // self.base
 		return spell
 	
@@ -51,16 +51,20 @@ class Magic(object):
 
 class spellGenGui(ui.View):
 	
-	def __init__( self, viewname ):
-		self.view = ui.load_view(viewname)
+	def did_load( self ):
 		self.magic = Magic(mysalt, myiter)
 		
-		self.txt_service = self.view['txt_service']
-		self.txt_account = self.view['txt_account']
-		self.sld_iter = self.view['sld_iter']
-		self.lbl_iter = self.view['lbl_iterdisp']
-		self.btn_hash = self.view['btn_hash']
-		self.txv_spell = self.view['txv_spell']
+		self.txt_service = self['txt_service']
+		self.txt_account = self['txt_account']
+		self.sld_iter = self['sld_iter']
+		self.lbl_iter = self['lbl_iterdisp']
+		self.btn_hash = self['btn_hash']
+		self.btn_secret = self['btn_secret']
+		self.txv_spell = self['txv_spell']
+		
+		self.sld_iter.action = self.sld_iter_update
+		self.btn_hash.action = self.btn_hash_push
+		self.btn_secret.action = self.btn_secret_push
 
 		self.iter = 0
 		self.secret = keychain.get_password(appname,appname)
@@ -68,13 +72,13 @@ class spellGenGui(ui.View):
 		if self.secret is not None:
 			self.activate_button()
 	
-	def present( self ):
+	def mypresent( self ):
 		if ui.get_screen_size()[1] >= 768:
 			# iPad
-			self.view.present('sheet')
+			self.present('sheet')
 		else:
 			# iPhone
-			self.view.present()
+			self.present()
 
 	def precook_string( self, rawstring ):
 		return rawstring.casefold().strip()
@@ -88,22 +92,22 @@ class spellGenGui(ui.View):
 		self.btn_hash.title = '⛔️'
 
 	def sld_iter_update( self, sender ):
-		self.iter =  math.floor(sld_iter.value * 10)
+		self.iter =  math.floor(self.sld_iter.value * 10)
 		if self.iter == 10:
 			self.iter = 9
-		lbl_iter.text = str(self.iter)
+		self.lbl_iter.text = str(self.iter)
 
 	def btn_hash_push( self, sender ):
-		service = self.precook_string(txt_service.text)
-		account = self.precook_string(txt_account.text)
-		txt_service.text = service
-		txt_account.text = account
-		if myservice:
-			mybytes = magic.cook_basebytes(self.secret,service,account)
-			spell = magic.do_magic( mybytes, self.iter )
-			txv_spell.text = spell
+		service = self.precook_string(self.txt_service.text)
+		account = self.precook_string(self.txt_account.text)
+		self.txt_service.text = service
+		self.txt_account.text = account
+		if service:
+			mybytes = self.magic.cook_basebytes(self.secret,service,account)
+			spell = self.magic.do_magic( mybytes, self.iter )
+			self.txv_spell.text = spell
 		else:
-			txv_spell.text = ''
+			self.txv_spell.text = ''
 
 	def btn_secret_push( self, sender ):
 		tmpsecret = self.secret
@@ -127,5 +131,5 @@ class spellGenGui(ui.View):
 			self.secret = None
 			self.deactivate_button()
 
-gui = spellGenGui(appname)
-gui.present()
+gui = ui.load_view(appname)
+gui.mypresent()
