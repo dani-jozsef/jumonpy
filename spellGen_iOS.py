@@ -65,8 +65,8 @@ class spellGenGui(ui.View):
         self.lbl_iter.text = str(self.iter)
 
     def btn_hash_push(self, sender):
-        service = self.passgen.cook_inputstring(self.txt_service.text)
-        account = self.passgen.cook_inputstring(self.txt_account.text)
+        service = self.passgen.cook_inputstring(self.txt_service.text).decode(encoding='utf-8')
+        account = self.passgen.cook_inputstring(self.txt_account.text).decode(encoding='utf-8')
         self.txt_service.text = service
         self.txt_account.text = account
         if service:
@@ -88,7 +88,7 @@ class spellGenGui(ui.View):
             spellchecking=False)
         if tmpsecret is None:
             return
-        tmpsecret = self.passgen.cook_inputstring(tmpsecret)
+        tmpsecret = self.passgen.cook_inputstring(tmpsecret).decode(encoding='utf-8')
         if tmpsecret:
             keychain.set_password(appname, appname, tmpsecret)
             self.secret = tmpsecret

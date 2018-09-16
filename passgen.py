@@ -10,7 +10,7 @@ class Passgen(object):
 
     def __init__(self, salt, secret):
         self.salt = salt
-        self.secret = secret
+        self.secret = self.cook_inputstring(secret)
 
     def generate(self, service, account, iteration):
         service = self.cook_inputstring(service)

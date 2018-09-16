@@ -28,15 +28,14 @@ class Jumon(object):
             head = data[:3]
             data = data[3:]
             triad = int.from_bytes(
-                head + [0] * (3 - len(head)),
+                head + bytes([0] * (3 - len(head))),
                 byteorder='big',
                 signed=False)
-            result += self.glyphs[triad >> 18 & 0x3f] + \
-                self.glyphs[triad >> 12 & 0x3f]
+            result += self.glyphs[(triad >> 18 & 0x3f)] + self.glyphs[(triad >> 12 & 0x3f)]
             if len(head) > 1:
-                result += self.glyphs[triad >> 6 & 0x3f]
+                result += self.glyphs[(triad >> 6 & 0x3f)]
             if len(head) > 2:
-                result += self.glyphs[triad & 0x3f]
+                result += self.glyphs[(triad & 0x3f)]
             else:
                 result += self.terminator
         return result
