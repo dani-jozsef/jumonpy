@@ -3,22 +3,27 @@
 
 import hashlib
 
+
 class Passgen(object):
 
     maxiter = 200000
 
-    def __init__( self, salt, secret ):
+    def __init__(self, salt, secret):
         self.salt = salt
         self.secret = secret
 
-    def generate( self, service, account, iteration ):
-        service = cook_inputstring(service)
-        account = cook_inputstring(account)
+    def generate(self, service, account, iteration):
+        service = self.cook_inputstring(service)
+        account = self.cook_inputstring(account)
         plaintext = service + account + self.secret
-        h = hashlib.pbkdf2_hmac('sha256', basebytes, self.salt, self.maxiter - iteration )
+        h = hashlib.pbkdf2_hmac(
+            'sha256',
+            plaintext,
+            self.salt,
+            self.maxiter - iteration)
         return h
-    
-    def cook_inputstring( self, input ):
+
+    def cook_inputstring(self, input):
         return input.strip().casefold().encode(
             encoding='ascii',
             errors='replace')
