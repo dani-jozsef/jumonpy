@@ -2,7 +2,7 @@
 # coding: utf-8
 
 
-class Totugane(object):
+class Encoding(object):
 
     glyphs = (
         ['ka', 'ki', 'ku', 'ke', 'ko'] +
@@ -31,7 +31,8 @@ class Totugane(object):
                 head + bytes([0] * (3 - len(head))),
                 byteorder='big',
                 signed=False)
-            result += self.glyphs[(triad >> 18 & 0x3f)] + self.glyphs[(triad >> 12 & 0x3f)]
+            result += self.glyphs[(triad >> 18 & 0x3f)] + \
+                self.glyphs[(triad >> 12 & 0x3f)]
             if len(head) > 1:
                 result += self.glyphs[(triad >> 6 & 0x3f)]
             if len(head) > 2:

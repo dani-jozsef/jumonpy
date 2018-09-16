@@ -7,17 +7,17 @@ import keychain
 import ui
 import dialogs
 
-import jumon
+import totugane64
 import passgen
 
 appname = 'spellGen'
-mysalt = b'123'  # change this value!
+mysalt = b'totugane'  # change this value!
 
 
 class spellGenGui(ui.View):
 
     def did_load(self):
-        self.encoding = jumon.Totugane()
+        self.encoding = totugane64.Encoding()
         self.secret = keychain.get_password(appname, appname)
 
         self.passgen = passgen.Passgen(mysalt, self.secret)
@@ -47,9 +47,6 @@ class spellGenGui(ui.View):
             # iPhone
             self.present()
 
-    def precook_string(self, rawstring):
-        return rawstring.casefold().strip()
-
     def activate_button(self):
         self.btn_hash.enabled = True
         self.btn_hash.title = '✏️'
@@ -65,8 +62,10 @@ class spellGenGui(ui.View):
         self.lbl_iter.text = str(self.iter)
 
     def btn_hash_push(self, sender):
-        service = self.passgen.cook_inputstring(self.txt_service.text).decode(encoding='utf-8')
-        account = self.passgen.cook_inputstring(self.txt_account.text).decode(encoding='utf-8')
+        service = self.passgen.cook_inputstring(
+            self.txt_service.text).decode(encoding='utf-8')
+        account = self.passgen.cook_inputstring(
+            self.txt_account.text).decode(encoding='utf-8')
         self.txt_service.text = service
         self.txt_account.text = account
         if service:
@@ -88,14 +87,12 @@ class spellGenGui(ui.View):
             spellchecking=False)
         if tmpsecret is None:
             return
-        tmpsecret = self.passgen.cook_inputstring(tmpsecret,False).decode(encoding='utf-8')
         if tmpsecret:
+            tmpsecret = self.passgen.setSecret(tmpsecret)
             keychain.set_password(appname, appname, tmpsecret)
-            self.secret = tmpsecret
             self.activate_button()
         else:
             keychain.delete_password(appname, appname)
-            self.secret = None
             self.deactivate_button()
 
 
