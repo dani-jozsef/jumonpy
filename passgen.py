@@ -10,7 +10,7 @@ class Passgen(object):
 
     def __init__(self, salt, secret):
         self.salt = salt
-        self.secret = self.cook_inputstring(secret)
+        self.secret = self.cook_inputstring(secret, False)
 
     def generate(self, service, account, iteration):
         service = self.cook_inputstring(service)
@@ -23,7 +23,9 @@ class Passgen(object):
             self.maxiter - iteration)
         return h
 
-    def cook_inputstring(self, input):
-        return input.strip().casefold().encode(
+    def cook_inputstring(self, input, lowercase=True):
+        if lowercase:
+        	input = input.casefold()
+        return input.strip().encode(
             encoding='ascii',
             errors='replace')

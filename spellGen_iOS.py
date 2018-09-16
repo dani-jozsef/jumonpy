@@ -17,7 +17,7 @@ mysalt = b'123'  # change this value!
 class spellGenGui(ui.View):
 
     def did_load(self):
-        self.encoding = jumon.Jumon()
+        self.encoding = jumon.Totugane()
         self.secret = keychain.get_password(appname, appname)
 
         self.passgen = passgen.Passgen(mysalt, self.secret)
@@ -88,7 +88,7 @@ class spellGenGui(ui.View):
             spellchecking=False)
         if tmpsecret is None:
             return
-        tmpsecret = self.passgen.cook_inputstring(tmpsecret).decode(encoding='utf-8')
+        tmpsecret = self.passgen.cook_inputstring(tmpsecret,False).decode(encoding='utf-8')
         if tmpsecret:
             keychain.set_password(appname, appname, tmpsecret)
             self.secret = tmpsecret

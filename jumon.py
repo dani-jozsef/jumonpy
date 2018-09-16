@@ -2,7 +2,7 @@
 # coding: utf-8
 
 
-class Jumon(object):
+class Totugane(object):
 
     glyphs = (
         ['ka', 'ki', 'ku', 'ke', 'ko'] +
@@ -18,7 +18,7 @@ class Jumon(object):
         ['ma', 'mi', 'mu', 'me', 'mo'] +
         ['ya', 'yu', 'yo'] +
         ['ra', 'ri', 'ru', 're', 'ro'] +
-        ['wo'])
+        ['wa'])
 
     terminator = '='
 
