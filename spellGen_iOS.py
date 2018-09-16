@@ -1,58 +1,24 @@
 #!/usr/bin/env python3
 # coding: utf-8
 
-import hashlib
 import keychain
 import math
 import ui
 import dialogs
 
+import jumon
+import passgen
+
 appname = 'spellGen'
 mysalt = b'123' #change this value!
-myiter = 200000
-
-class Magic(object):
-	
-	syllabs = (['N'] +
-	  ['a','i','u','e','o'] +
-	  ['ka','ki','ku','ke','ko'] +
-	  ['ga','gi','gu','ge','go'] +
-	  ['sa','si','su','se','so'] +
-	  ['za','zi','zu','ze','zo'] +
-	  ['ta','ti','tu','te','to'] +
-	  ['da','di','du','de','do'] +
-	  ['na','ni','nu','ne','no'] +
-	  ['ha','hi','hu','he','ho'] +
-	  ['ba','bi','bu','be','bo'] +
-	  ['pa','pi','pu','pe','po'] +
-	  ['ma','mi','mu','me','mo'] +
-	  ['ra','ri','ru','re','ro'])
-	
-	base = 66
-	
-	def __init__( self, salt, maxiter ):
-		self.salt = salt
-		self.maxiter = maxiter
-	
-	def do_magic( self, basebytes, iteration ):
-		hash = int.from_bytes(
-		  hashlib.pbkdf2_hmac('sha256', basebytes, self.salt, self.maxiter - iteration ),
-		  byteorder='big',
-		  signed=False )
-		spell=''
-		while hash > 0:
-			mod = hash % self.base
-			spell = self.syllabs[mod] + spell
-			hash = hash // self.base
-		return spell
-	
-	def cook_basebytes( self, secret, service, account ):
-		return ( service + account + secret ).encode(encoding='ascii',errors='replace')
 
 class spellGenGui(ui.View):
 	
 	def did_load( self ):
-		self.magic = Magic(mysalt, myiter)
+		self.encoding = jumon.Jumon()
+		self.secret = keychain.get_password(appname,appname)
+
+		self.passgen = passgen.Passgen(mysalt, self.secret)
 		
 		self.txt_service = self['txt_service']
 		self.txt_account = self['txt_account']
@@ -67,7 +33,6 @@ class spellGenGui(ui.View):
 		self.btn_secret.action = self.btn_secret_push
 
 		self.iter = 0
-		self.secret = keychain.get_password(appname,appname)
 
 		if self.secret is not None:
 			self.activate_button()
@@ -98,13 +63,13 @@ class spellGenGui(ui.View):
 		self.lbl_iter.text = str(self.iter)
 
 	def btn_hash_push( self, sender ):
-		service = self.precook_string(self.txt_service.text)
-		account = self.precook_string(self.txt_account.text)
+		service = self.passgen.cook_inputstring(self.txt_service.text)
+		account = self.passgen.cook_inputstring(self.txt_account.text)
 		self.txt_service.text = service
 		self.txt_account.text = account
 		if service:
-			mybytes = self.magic.cook_basebytes(self.secret,service,account)
-			spell = self.magic.do_magic( mybytes, self.iter )
+			h = self.passgen.generate(service, account, self.iter)
+			spell = self.encoding.encode(h)
 			self.txv_spell.text = spell
 		else:
 			self.txv_spell.text = ''
@@ -121,7 +86,7 @@ class spellGenGui(ui.View):
 			spellchecking=False)
 		if tmpsecret is None:
 			return
-		tmpsecret = tmpsecret.strip()
+		tmpsecret = self.passgen.cook_inputstring(tmpsecret)
 		if tmpsecret:
 			keychain.set_password(appname,appname,tmpsecret)
 			self.secret = tmpsecret
