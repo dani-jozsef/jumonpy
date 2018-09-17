@@ -12,7 +12,7 @@ To achieve similar results, spellGen uses a base64 representation of the hash fu
 
 # The "totugane64" encoding
 
-Totugane64 is a riff on standard base64 encoding, replacing the single-character glyphs with two character syllables taken from Japanese syllabic script (encoded via ASCII). Totugane64 possesses prefix property, making decoding cheap, and is human readable, pronouncable and highly mnemonic. Ever wanted to memorize an ECDSA private key? Well now you can.
+Totugane64 is a riff on standard base64 encoding, replacing the single-character glyphs with two character syllables taken from (romanized) Japanese syllabic script (encoded via ASCII). Totugane64 possesses prefix property, making decoding cheap, and is human readable, pronouncable and highly mnemonic. Ever wanted to memorize an ECDSA private key? Well now you can.
 
 The commonly used Japanese syllables, excluding standalone wovels (ん is a standalone wovel too), number exactly 65. That is 64 without を, which is exclusively used as a particle in modern Japanese, ie. it's never part of a modern word. So the encoding alphabet with 64 glyphs, in gojūon ordering, is:
 
