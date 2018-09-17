@@ -12,9 +12,11 @@ To achieve similar results, spellGen uses a base64 representation of the hash fu
 
 # The "totugane64" encoding
 
+Totugane64 is a riff on standard base64 encoding, replacing the single-character glyphs with two character syllables taken from Japanese syllabic script (encoded via ASCII). Totugane64 possesses prefix property, making decoding cheap, and is human readable, pronouncable and highly mnemonic. Ever wanted to memorize an ECDSA private key? Well now you can.
+
 The commonly used Japanese syllables, excluding standalone wovels (ん is a standalone wovel too), number exactly 65. That is 64 without を, which is exclusively used as a particle in modern Japanese, ie. it's never part of a modern word. So the encoding alphabet with 64 glyphs, in gojūon ordering, is:
 
-ka ki ku ke ko
+( ka ki ku ke ko
 ga gi gu ge go
 sa si su se so
 za zi zu ze zo
@@ -27,8 +29,8 @@ pa pi pu pe po
 ma mi mu me mo
 ya yu yo
 ra ri ru re ro
-wa
+wa )
 
-If the last 24bit sequence isn't full, instead of padding as in regular base64, a single terminator character is added to the end of the output. The terminator is =
+If the last 24bit sequence isn't full, instead of padding as in standard base64, a single terminator character is added to the end of the output to avoid data corruption from concatenating encoded streams. The terminator is the ASCII character =
 
-The name "totugane" comes from the fact that b'aaa' encodes into 'totugane' (突金), which sounds kinda cool and could be translated as "metal piercer" or something similar. ;)
+The name "totugane" comes from the fact that the ASCII string 'aaa' encodes into 'totugane' (突金), which sounds kinda cool and could be translated as "metal piercer" or something similar. ;)
