@@ -17,6 +17,7 @@ mysalt = b'totugane'  # change this value!
 
 class spellGenGui(ui.View):
 
+    # Init event handler
     def did_load(self):
         self.encoding = totugane64.Encoding()
 
@@ -39,6 +40,7 @@ class spellGenGui(ui.View):
             self.passgen = passgen.Passgen(mysalt, secret)
             self.activate_button()
 
+    # Set correct screen size for iPad and iPhone
     def mypresent(self):
         if ui.get_screen_size()[1] >= 768:
             # iPad
@@ -47,20 +49,24 @@ class spellGenGui(ui.View):
             # iPhone
             self.present()
 
+    # Enable hash button
     def activate_button(self):
         self.btn_hash.enabled = True
         self.btn_hash.title = '✏️'
 
+    # Disable hash button
     def deactivate_button(self):
         self.btn_hash.enabled = False
         self.btn_hash.title = '⛔️'
 
+    # Iteration slider change handler
     def sld_iter_update(self, sender):
         self.iter = math.floor(self.sld_iter.value * 10)
         if self.iter == 10:
             self.iter = 9
         self.lbl_iter.text = str(self.iter)
 
+    # Generate hash button handler
     def btn_hash_push(self, sender):
         service = self.passgen.cook_inputstring(
             self.txt_service.text).decode(encoding='utf-8')
@@ -75,8 +81,9 @@ class spellGenGui(ui.View):
         else:
             self.txv_spell.text = ''
 
+    # Set/change secret button handler with dialog
     def btn_secret_push(self, sender):
-        tmpsecret = self.secret
+        tmpsecret = keychain.get_password(appname, appname)
         if tmpsecret is None:
             tmpsecret = ''
         tmpsecret = dialogs.text_dialog(
