@@ -11,8 +11,10 @@ import dialogs
 import totugane64
 import passgen
 
-appname = 'spellGen'
-mysalt = b'totugane'  # change this value!
+appname = 'jumon'
+mainview = 'jumon_iOS'
+
+salt = b'totugane'  # change this value!
 
 
 class spellGenGui(ui.View):
@@ -20,6 +22,7 @@ class spellGenGui(ui.View):
     # Init event handler
     def did_load(self):
         self.encoding = totugane64.Encoding()
+        self.passgen = passgen.Passgen(salt)
 
         self.txt_service = self['txt_service']
         self.txt_account = self['txt_account']
@@ -37,8 +40,13 @@ class spellGenGui(ui.View):
 
         secret = keychain.get_password(appname, appname)
         if secret is not None:
-            self.passgen = passgen.Passgen(mysalt, secret)
+            self.updateSecret(secret)
             self.activate_button()
+
+    # Updates secret, and saves back cooked (trimmed ASCIIfied) secret string
+    def updateSecret(self, secret):
+        secret = self.passgen.setSecret(secret).decode(encoding='utf-8')
+        keychain.set_password(appname, 'secret', secret)
 
     # Set correct screen size for iPad and iPhone
     def mypresent(self):
@@ -95,8 +103,7 @@ class spellGenGui(ui.View):
         if tmpsecret is None:
             return
         if tmpsecret:
-            tmpsecret = self.passgen.setSecret(tmpsecret)
-            keychain.set_password(appname, appname, tmpsecret)
+            self.updateSecret(tmpsecret)
             self.activate_button()
         else:
             self.deactivate_button()
@@ -104,5 +111,5 @@ class spellGenGui(ui.View):
             self.passgen = None
 
 
-gui = ui.load_view(appname)
+gui = ui.load_view(mainview)
 gui.mypresent()
