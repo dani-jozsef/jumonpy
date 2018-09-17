@@ -38,15 +38,28 @@ class spellGenGui(ui.View):
 
         self.iter = 0
 
-        secret = keychain.get_password(appname, appname)
+        self.loadSecret()
+
+    # Loads secret
+    def loadSecret(self):
+        secret = keychain.get_password(appname, 'secret')
         if secret is not None:
-            self.updateSecret(secret)
+            secret = self.passgen.setSecret(secret).decode(encoding='utf-8')
             self.activate_button()
+            return secret
+        self.deactivate_button()
 
     # Updates secret, and saves back cooked (trimmed ASCIIfied) secret string
     def updateSecret(self, secret):
         secret = self.passgen.setSecret(secret).decode(encoding='utf-8')
         keychain.set_password(appname, 'secret', secret)
+        self.activate_button()
+        return secret
+
+    # Clears saved secret
+    def clearSecret(self):
+        keychain.delete_password(appname, 'secret')
+        self.deactivate_button()
 
     # Set correct screen size for iPad and iPhone
     def mypresent(self):
@@ -91,7 +104,7 @@ class spellGenGui(ui.View):
 
     # Set/change secret button handler with dialog
     def btn_secret_push(self, sender):
-        tmpsecret = keychain.get_password(appname, appname)
+        tmpsecret = self.loadSecret()
         if tmpsecret is None:
             tmpsecret = ''
         tmpsecret = dialogs.text_dialog(
@@ -104,11 +117,8 @@ class spellGenGui(ui.View):
             return
         if tmpsecret:
             self.updateSecret(tmpsecret)
-            self.activate_button()
         else:
-            self.deactivate_button()
-            keychain.delete_password(appname, appname)
-            self.passgen = None
+            self.clearSecret()
 
 
 gui = ui.load_view(mainview)
