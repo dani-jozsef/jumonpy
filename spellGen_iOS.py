@@ -3,6 +3,7 @@
 
 import math
 
+# iOS specific imports
 import keychain
 import ui
 import dialogs
@@ -18,9 +19,6 @@ class spellGenGui(ui.View):
 
     def did_load(self):
         self.encoding = totugane64.Encoding()
-        self.secret = keychain.get_password(appname, appname)
-
-        self.passgen = passgen.Passgen(mysalt, self.secret)
 
         self.txt_service = self['txt_service']
         self.txt_account = self['txt_account']
@@ -36,7 +34,9 @@ class spellGenGui(ui.View):
 
         self.iter = 0
 
-        if self.secret is not None:
+        secret = keychain.get_password(appname, appname)
+        if secret is not None:
+            self.passgen = passgen.Passgen(mysalt, secret)
             self.activate_button()
 
     def mypresent(self):
@@ -92,8 +92,9 @@ class spellGenGui(ui.View):
             keychain.set_password(appname, appname, tmpsecret)
             self.activate_button()
         else:
-            keychain.delete_password(appname, appname)
             self.deactivate_button()
+            keychain.delete_password(appname, appname)
+            self.passgen = None
 
 
 gui = ui.load_view(appname)
