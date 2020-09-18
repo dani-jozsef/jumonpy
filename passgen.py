@@ -1,41 +1,40 @@
 #!/usr/bin/env python3
 # coding: utf-8
 
-import hashlib
+import totugane64
+import passgen
+import stringutils as su
 
 
-class Passgen(object):
+encoding = totugane64.Encoding()
 
-    maxiter = 200000
-    separator = b'_'
 
-    # Initializes generator with salt
-    def __init__(self, salt):
-        self.salt = salt
-        self.secret = None
+fmt = su.SliceFormatter()
 
-    # Sets the input string after trimming& ASCIIfying as secret
-    def setSecret(self, secret):
-        self.secret = self.cook_inputstring(secret, False)
-        return self.secret
 
-    # Generates a deterministic 256 bit key for a service and account string
-    def generate(self, service, account, iteration):
-        service = self.cook_inputstring(service)
-        account = self.cook_inputstring(account)
-        plaintext = self.separator.join([service, account, self.secret])
-        h = hashlib.pbkdf2_hmac(
-            'sha256',
-            plaintext,
-            self.salt,
-            self.maxiter - iteration)
-        return h
+class Jumon(object):
 
-    # Converts a string to a bytes object after trimming, ASCIIfying
-    # and optional conversion to lowercase
-    def cook_inputstring(self, input, lowercase=True):
-        if lowercase:
-            input = input.casefold()
-        return input.strip().encode(
-            encoding='ascii',
-            errors='replace')
+	def __init__(self, salt, secret, iterations):
+		self.passgen = passgen.Passgen(salt)
+		self.passgen.set_secret(secret)
+		self.iterations = iterations
+
+	def gen_spellstring(self, service, account, password_iteration):
+		h = self.passgen.gen_hash(
+			service = service,
+			account = account,
+			iterations = self.iterations - password_iteration
+		)
+		return encoding.encode(h)
+
+	def gen_password(self, service, account, password_iteration, fmt_string):
+		spell = self.gen_spellstring(
+			service = service,
+			account = account,
+			password_iteration = password_iteration
+		)
+		return fmt.format(
+			fmt_string,
+			spell = spell,
+			iteration = password_iteration
+		)

@@ -20,7 +20,7 @@ class Encoding(object):
         ['ra', 'ri', 'ru', 're', 'ro'] +
         ['wa'])
 
-    terminator = '='
+    padding = '=='
 
     def encode(self, data):
         result = ''
@@ -35,8 +35,10 @@ class Encoding(object):
                 self.glyphs[(triad >> 12 & 0x3f)]
             if len(head) > 1:
                 result += self.glyphs[(triad >> 6 & 0x3f)]
+            else:
+                result += self.padding
             if len(head) > 2:
                 result += self.glyphs[(triad & 0x3f)]
             else:
-                result += self.terminator
+                result += self.padding
         return result
