@@ -2,7 +2,7 @@
 # coding: utf-8
 
 import totugane64
-import passgen
+import hashgen
 import stringutils as su
 
 
@@ -15,7 +15,7 @@ fmt = su.SliceFormatter()
 class Jumon(object):
 
 	def __init__(self, salt, secret, iterations):
-		self.passgen = passgen.Passgen(salt)
+		self.passgen = hashgen.Hashgen(salt)
 		self.passgen.set_secret(secret)
 		self.iterations = iterations
 
