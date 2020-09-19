@@ -11,14 +11,9 @@ class Hashgen(object):
     separator = b'_'
 
     # Initializes generator with salt
-    def __init__(self, salt):
+    def __init__(self, salt, secret):
         self.salt = su.cook_inputstring(salt)
-        self.secret = None
-
-    # Sets the input string after trimming& ASCIIfying as secret
-    def set_secret(self, secret):
         self.secret = su.cook_inputstring(secret, False)
-        return self.secret
 
     # Generates a deterministic 256 bit key for a service and account string
     def gen_hash(self, service, account, iterations):

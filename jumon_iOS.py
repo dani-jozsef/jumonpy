@@ -1,125 +1,30 @@
 #!/usr/bin/env python3
 # coding: utf-8
 
-import math
-
 # iOS specific imports
 import keychain
-import ui
-import dialogs
+import stringutils as su
+import jumon
 
-import totugane64
-import passgen
-
-appname = 'jumon'
-mainview = 'jumon_iOS'
-
-salt = b'totugane'  # change this value!
+keychain_service = 'jumon'
+keychain_account = 'secret'
 
 
-class spellGenGui(ui.View):
-
-    # Init event handler
-    def did_load(self):
-        self.encoding = totugane64.Encoding()
-        self.passgen = passgen.Passgen(salt)
-
-        self.txt_service = self['txt_service']
-        self.txt_account = self['txt_account']
-        self.sld_iter = self['sld_iter']
-        self.lbl_iter = self['lbl_iterdisp']
-        self.btn_hash = self['btn_hash']
-        self.btn_secret = self['btn_secret']
-        self.txv_spell = self['txv_spell']
-
-        self.sld_iter.action = self.sld_iter_update
-        self.btn_hash.action = self.btn_hash_push
-        self.btn_secret.action = self.btn_secret_push
-
-        self.iter = 0
-
-        self.loadSecret()
-
-    # Loads secret
-    def loadSecret(self):
-        secret = keychain.get_password(appname, 'secret')
-        if secret is not None:
-            secret = self.passgen.setSecret(secret).decode(encoding='utf-8')
-            self.activate_button()
-            return secret
-        self.deactivate_button()
-
-    # Updates secret, and saves back cooked (trimmed ASCIIfied) secret string
-    def updateSecret(self, secret):
-        secret = self.passgen.setSecret(secret).decode(encoding='utf-8')
-        keychain.set_password(appname, 'secret', secret)
-        self.activate_button()
-        return secret
-
-    # Clears saved secret
-    def clearSecret(self):
-        keychain.delete_password(appname, 'secret')
-        self.deactivate_button()
-
-    # Set correct screen size for iPad and iPhone
-    def mypresent(self):
-        if ui.get_screen_size()[1] >= 768:
-            # iPad
-            self.present('sheet')
-        else:
-            # iPhone
-            self.present()
-
-    # Enable hash button
-    def activate_button(self):
-        self.btn_hash.enabled = True
-        self.btn_hash.title = '✏️'
-
-    # Disable hash button
-    def deactivate_button(self):
-        self.btn_hash.enabled = False
-        self.btn_hash.title = '⛔️'
-
-    # Iteration slider change handler
-    def sld_iter_update(self, sender):
-        self.iter = math.floor(self.sld_iter.value * 10)
-        if self.iter == 10:
-            self.iter = 9
-        self.lbl_iter.text = str(self.iter)
-
-    # Generate hash button handler
-    def btn_hash_push(self, sender):
-        service = self.passgen.cook_inputstring(
-            self.txt_service.text).decode(encoding='utf-8')
-        account = self.passgen.cook_inputstring(
-            self.txt_account.text).decode(encoding='utf-8')
-        self.txt_service.text = service
-        self.txt_account.text = account
-        if service:
-            h = self.passgen.generate(service, account, self.iter)
-            spell = self.encoding.encode(h)
-            self.txv_spell.text = spell
-        else:
-            self.txv_spell.text = ''
-
-    # Set/change secret button handler with dialog
-    def btn_secret_push(self, sender):
-        tmpsecret = self.loadSecret()
-        if tmpsecret is None:
-            tmpsecret = ''
-        tmpsecret = dialogs.text_dialog(
-            title='Set secret',
-            text=tmpsecret,
-            autocorrection=False,
-            autocapitalization=ui.AUTOCAPITALIZE_NONE,
-            spellchecking=False)
-        if tmpsecret is None:
-            return
-        if tmpsecret:
-            self.updateSecret(tmpsecret)
-        else:
-            self.clearSecret()
+# Clears saved secret
+def clearSecret():
+    keychain.delete_password(keychain_service, keychain_account)
+    print('Done.')
 
 
-gui = ui.load_view(mainview)
-gui.mypresent()
+def updateSecret(secret):
+    keychain.set_password(keychain_service, keychain_account, secret)
+    print('Done.')
+
+
+def getSecret():
+    return keychain.get_password(keychain_service, keychain_account)
+
+
+def newJumon(salt):
+    secret = getSecret()
+    return jumon.Jumon(salt, secret)

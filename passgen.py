@@ -12,15 +12,14 @@ encoding = totugane64.Encoding()
 fmt = su.SliceFormatter()
 
 
-class Jumon(object):
+class Passgen(object):
 
 	def __init__(self, salt, secret, iterations):
-		self.passgen = hashgen.Hashgen(salt)
-		self.passgen.set_secret(secret)
+		self.hashgen = hashgen.Hashgen(salt, secret)
 		self.iterations = iterations
 
 	def gen_spellstring(self, service, account, password_iteration):
-		h = self.passgen.gen_hash(
+		h = self.hashgen.gen_hash(
 			service = service,
 			account = account,
 			iterations = self.iterations - password_iteration
@@ -36,5 +35,5 @@ class Jumon(object):
 		return fmt.format(
 			fmt_string,
 			spell = spell,
-			iteration = password_iteration
+			password_iteration = password_iteration
 		)
