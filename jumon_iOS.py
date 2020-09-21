@@ -25,6 +25,6 @@ def getSecret():
     return keychain.get_password(keychain_service, keychain_account)
 
 
-def newJumon(salt):
+def newJumon(salt, fmt_string=jumon.default_fmt_string):
     secret = getSecret()
-    return jumon.Jumon(salt, secret)
+    return jumon.Jumon(salt, secret, fmt_string)
