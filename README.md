@@ -6,7 +6,7 @@ It allows the generation of mnemonic password bases for any number of services a
 
 It stores a user-provided secret to be used in generating the passes in the keychain, and generates hash keys from a concatenated input of the service, account and secret strings. To avoid self-harm via similar-looking characters, input strings are limited to the ASCII character set.
 
-The core idea came from old Famicom (Japanese NES) games, which used password systems for 'saving' the game state. Unlike western versions, the Japanese passwords were uncannily mnemonic, thanks to the rather limited syllable set of the Japanese language.
+The core idea came from old Famicom (Japanese NES) games, which used password systems for 'saving' the game state. Unlike western versions, the Japanese passwords were uncannily mnemonic, thanks to the rather limited syllable set of the Japanese language, and were referred to in Japanese gamer culture as "resurrection spells".
 
 To achieve similar results, JumonPy uses the totugane64 encoding to represent the pbkdf2-generated 256 bit hash. The result is a pronounceable string, a substring of which may be used as a convenient and mnemonic password.
 
@@ -30,7 +30,5 @@ ma mi mu me mo
 ya yu yo
 ra ri ru re ro
 wa )
-
-If the last 24bit sequence isn't full, instead of padding as in standard base64, a single terminator character is added to the end of the output to avoid data corruption from concatenating encoded streams. The terminator is the ASCII character '='.
 
 The name "totugane" comes from the fact that the ASCII string 'aaa' encodes into 'totugane' (突金), which sounds kinda cool and could be translated as "metal piercer" or something similar. ;)
