@@ -10,7 +10,7 @@ import stringutils as su
 
 dbname = 'jumon'
 default_fmt_string = '{spell|0,20}.{password_iteration}'
-iterations = 100000
+iterations = 200000
 
 
 def saverec(key, value):
@@ -62,7 +62,7 @@ class Jumon(object):
 	def __init__(self, salt, secret):
 		self.passgen = passgen.Passgen(salt, secret, iterations)
 
-	def __call__(self, service, account):
+	def __call__(self, service, account=''):
 		index = self.passgen.gen_spellstring(service, account, -1)
 		meta = getrecord(index)
 		return self.gen_password(service, account, meta)	
