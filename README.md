@@ -16,6 +16,8 @@ The generated hash strings are then fed through a simple templating engine to ge
 
 ## How to use
 
+**NOTE: Make sure to copy `jumonconfig_example.py` into `jumonconfig.py` and personalize the values before running. `jumonconfig.py` is included in `.gitignore` to prevent accidentally pushing your configuration to a public repository.**
+
 The `JumonApp` class can be instantiated directly from `jumon.py`, or inherited from as in the `jumon_iOS.py` or `jumon_portable.py` files. JumonApp provides an interface for generating passwords, and manipulating metadata through the metadata store object (an implementation based on the `dbm` module is included in `metadata_db.py`).
 
 The iOS Pythonista version adds some convenience tools like copying passwords to the clipboard, an iOS dialog for inputting the passphrase, and storing the secret string in the device keychain.
@@ -25,8 +27,6 @@ The iOS Pythonista version adds some convenience tools like copying passwords to
 Templating format strings can be used to generate the desired length and shape of password. JumonApp uses a custom subclass of the Python string formatter, included in `stringutils.py`. It adds the ability to specify substrings: `'{mystr|1,5}'` is equivalent to `mystr[slice(1, 5)]`
 
 Its use is relatively straightforward from the example included in `jumonconfig_example.py`. Available fields are `upper` and `lower` for the hash string in upper or lower case, and `iteration` for the password's iteration counter.
-
-**NOTE: Make sure to copy `jumonconfig_example.py` into `jumonconfig.py` and personalize the values before running. `jumonconfig.py` is included in `.gitignore` to prevent accidentally pushing your configuration to a public repository.**
 
 # The "totugane64" encoding
 

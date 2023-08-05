@@ -7,7 +7,7 @@ from jumon import metadata_fields
 import jumonconfig
 
 class MetadataDb(object):
-	
+
   def __init__(self, dbpath=None):
     self.dbpath = dbpath if dbpath is not None else jumonconfig.metadata_db_path
     dbm.open(file=self.dbpath, flag='c').close()
