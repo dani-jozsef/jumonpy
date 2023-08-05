@@ -47,18 +47,18 @@ class KeychainSecretStore_iOS(object):
 class JumonApp_iOS(jumon.JumonApp):
   
   def __init__(self,
-      passphrase=None,
       iterations=None,
       fmt_string=None,
       keychain_account=None,
       metadata_dbpath=None):
-    if passphrase is None:
-      passphrase = _passphrase_dialog()
+    passphrase = _passphrase_dialog()
     secret_store = KeychainSecretStore_iOS(keychain_account)
     metadata_store = metadata_db.MetadataDb(metadata_dbpath)
     super().__init__(passphrase, iterations, fmt_string, secret_store, metadata_store)
 
-  def gen_password(self, service, account='', password_iteration=None, fmt_string=None):
+  def gen_password(self, service, account='', password_iteration=None, fmt_string=None, copy=True):
     password = super().gen_password(service, account, password_iteration, fmt_string)
-    clipboard.set(password)
+    if copy:
+      clipboard.set(password)
+      print("Password copied to clipboard...")
     return password
