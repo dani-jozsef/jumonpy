@@ -1,4 +1,3 @@
 __pycache__
-*.bak
-*.dat
-*.dir
+jumonconfig.py
+jumon_metadata*

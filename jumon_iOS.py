@@ -1,30 +1,64 @@
 #!/usr/bin/env python3
 # coding: utf-8
 
-# iOS specific imports
-import keychain
 import stringutils as su
 import jumon
+import jumonconfig
+import metadata_db
 
-keychain_service = 'jumon'
-keychain_account = 'secret'
+# iOS Pythonista specific imports
+import keychain
+import clipboard
+import dialogs
 
+def _passphrase_dialog():
+  salt_dialog = dialogs.form_dialog(
+    title = 'New Jumon Instance',
+    fields = [{
+      'key':'passphrase',
+      'placeholder':'passphrase',
+      'type':'password'
+    }])
+  if salt_dialog is None:
+    return ''
+  return salt_dialog['passphrase']
 
-# Clears saved secret
-def clearSecret():
-    keychain.delete_password(keychain_service, keychain_account)
+_keychain_service = 'jumon'
+
+class KeychainSecretStore_iOS(object):
+
+  def __init__(self, keychain_account=None):
+    self.keychain_account = keychain_account if keychain_account is not None else jumonconfig.ios_keychain_account
+
+  def clear_secret(self):
+    keychain.delete_password(_keychain_service, self.keychain_account)
     print('Done.')
 
-
-def updateSecret(secret):
-    keychain.set_password(keychain_service, keychain_account, secret)
+  def set_secret(self, secret):
+    keychain.set_password(_keychain_service, self.keychain_account, secret)
     print('Done.')
 
+  def get_secret(self):
+    secret = keychain.get_password(_keychain_service, self.keychain_account)
+    if secret is None:
+      raise KeyError(f'No secret is set in the keychain under {_keychain_service}:{self.keychain_account}')
+    return secret
 
-def getSecret():
-    return keychain.get_password(keychain_service, keychain_account)
+class JumonApp_iOS(jumon.JumonApp):
+  
+  def __init__(self,
+      passphrase=None,
+      iterations=None,
+      fmt_string=None,
+      keychain_account=None,
+      metadata_dbpath=None):
+    if passphrase is None:
+      passphrase = _passphrase_dialog()
+    secret_store = KeychainSecretStore_iOS(keychain_account)
+    metadata_store = metadata_db.MetadataDb(metadata_dbpath)
+    super().__init__(passphrase, iterations, fmt_string, secret_store, metadata_store)
 
-
-def newJumon(salt, fmt_string=jumon.default_fmt_string):
-    secret = getSecret()
-    return jumon.Jumon(salt, secret, fmt_string)
+  def gen_password(self, service, account='', password_iteration=None, fmt_string=None):
+    password = super().gen_password(service, account, password_iteration, fmt_string)
+    clipboard.set(password)
+    return password

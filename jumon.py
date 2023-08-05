@@ -1,95 +1,101 @@
 #!/usr/bin/env python3
 # coding: utf-8
 
-import dbm
-import json
-import time
+import jumonconfig
 import passgen
 import stringutils as su
 
+class metadata_fields:
+  PASSWORD_ITERATION = 'password_iteration'
+  FMT_STRING = 'fmt_string'
 
-dbname = 'jumon'
-default_fmt_string = '{spell|0,20}.{password_iteration}'
-iterations = 200000
+def _format_spellstring(spellstring, password_iteration, fmt_string):
+  return su.slice_formatter.format(
+    fmt_string,
+    spell = spellstring,
+    lower = spellstring.lower(),
+    upper = spellstring.upper(),
+    iteration = password_iteration,
+    password_iteration = password_iteration
+  )
 
+class JumonApp(object):
 
-def save_record(key, value):
-	try:
-		with dbm.open(file=dbname, flag='c') as db:
-			dbkey = su.cook_inputstring(key)
-			dbvalue = json.dumps(value)
-			db[dbkey] = dbvalue
-	except:
-		print('Db access failed on save')
+  def __init__(
+      self,
+      passphrase,
+      iterations=None,
+      fmt_string=None,
+      secret_store=None,
+      metadata_store=None):
+    self.passphrase = passphrase
+    self.iterations = iterations if iterations is not None else jumonconfig.iterations
+    self.fmt_string = fmt_string if fmt_string is not None else jumonconfig.fmt_string
+    self.secret_store = secret_store
+    self.metadata_store = metadata_store
 
+  def __call__(self, service, account='', password_iteration=None, fmt_string=None):
+    return self.gen_password(service, account, password_iteration, fmt_string)
 
-def load_record(key):
-	try:
-		with dbm.open(file=dbname, flag='r') as db:
-			dbkey = su.cook_inputstring(key)
-			value = db.get(dbkey)
-			return json.loads(value)
-	except:
-		return None
+  def gen_password(self, service, account='', password_iteration=None, fmt_string=None):
+    if self.secret_store is None:
+      print("WARNING: No secret store is available")
+    metadata = self.get_metadata(service, account)
+    effective_password_iteration = password_iteration if password_iteration is not None else metadata[metadata_fields.PASSWORD_ITERATION]
+    effective_fmt_string = fmt_string if fmt_string is not None else metadata[metadata_fields.FMT_STRING]
+    return self._gen_password_with_metadata(service, account, effective_password_iteration, effective_fmt_string)
 
+  def get_metadata(self, service, account=''):
+    default_metadata = {
+        metadata_fields.PASSWORD_ITERATION: 0,
+        metadata_fields.FMT_STRING: self.fmt_string
+      }
+    if self.metadata_store is None:
+      print("WARNING: No metadata store is available")
+      return default_metadata
+    key = self._get_metadata_key(service, account)
+    effective_metadata = default_metadata | self.metadata_store.load_record(key)
+    return effective_metadata
+  
+  def next_password(self, service, account=''):
+    if self.metadata_store is None:
+      print("WARNING: This call requires a metadata store")
+      return None
+    key = self._get_metadata_key(service, account)
+    self.metadata_store.increment_iteration(key)
+    return self.gen_password(service, account)
 
-def clear_record(key):
-	try:
-		with dbm.open(file=dbname, flag='w') as db:
-			db.pop(key)
-	except:
-		print('No such record or db access failed on delete')
+  def set_fmt_string(self, fmt_string, service, account=''):
+    if self.metadata_store is None:
+      print("WARNING: This call requires a metadata store")
+      return None
+    key = self._get_metadata_key(service, account)
+    self.metadata_store.set_fmt_string(key, fmt_string)
+    return self.gen_password(service, account)
 
+  def clear_metadata(self, service, account=''):
+    if self.metadata_store is None:
+      print("WARNING: This call requires a metadata store")
+      return None
+    key = self._get_metadata_key(service, account)
+    self.metadata_store.clear_record(key)
+    return self.gen_password(service, account)
 
-def get_record_with_init(index):
-	meta = load_record(index)
-	if not meta:
-		meta = { 'firstused': time.time() }
-		save_record(index, meta)
-	return meta
+  def _gen_password_with_metadata(self, service, account, password_iteration, fmt_string):
+    if password_iteration < 0:
+      raise ValueError("Illegal password iteration (must be >= 0)")
+    spellstring = str(self._gen_spellstring(service, account, password_iteration), encoding='ascii')
+    return _format_spellstring(spellstring, password_iteration, fmt_string)
 
+  def _get_metadata_key(self, service, account):
+    return self._gen_spellstring(service, account, -1)
 
-def get_password_iteration(meta):
-	return meta.get('password_iteration', 0)
-
-
-class Jumon(object):
-
-	def __init__(self, salt, secret, fmt_string=default_fmt_string):
-		self.passgen = passgen.Passgen(salt, secret, iterations)
-		self.fmt_string = fmt_string
-
-	def __call__(self, service, account=''):
-		index = self.passgen.gen_spellstring(service, account, -1)
-		meta = get_record_with_init(index)
-		return self.gen_password(service, account, meta)	
-
-	def next_password(self, service, account):
-		index = self.passgen.gen_spellstring(service, account, -1)
-		meta = get_record_with_init(index)
-		meta['password_iteration'] = get_password_iteration(meta) + 1
-		save_record(index, meta)
-		return self.gen_password(service, account, meta)
-
-	def set_fmt_string(self, service, account, fmt_string):
-		index = self.passgen.gen_spellstring(service, account, -1)
-		meta = get_record_with_init(index)
-		meta['fmt_string'] = fmt_string
-		save_record(index, meta)
-		return self.gen_password(service, account, meta)
-
-	def clear_meta(self, service, account):
-		index = self.passgen.gen_spellstring(service, account, -1)
-		clear_record(index)
-		print('Done.')
-
-	def gen_password(self, service, account, meta):
-		return self.passgen.gen_password(
-			service=service,
-			account=account,
-			password_iteration=get_password_iteration(meta),
-			fmt_string=self.__get_fmt_string(meta)
-		)
-	
-	def __get_fmt_string(self, meta):
-		return meta.get('fmt_string', self.fmt_string)
+  def _gen_spellstring(self, service, account, password_iteration):
+    return passgen.gen_spellstring(
+      service,
+      account,
+      passphrase = self.passphrase,
+      iterations = self.iterations - password_iteration,
+      secret = self.secret_store.get_secret() if self.secret_store is not None else None
+    )
+  
