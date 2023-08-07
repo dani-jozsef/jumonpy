@@ -3,8 +3,9 @@
 
 import dbm
 import json
-from jumon import metadata_fields
-import jumonconfig
+
+from .jumon import metadata_fields
+from . import jumonconfig
 
 class MetadataDb(object):
 

@@ -1,6 +1,9 @@
 #!/usr/bin/env python3
 # coding: utf-8
 
-import jumon_iOS
+from jumon import jumon_iOS
 
-j = jumon_iOS.JumonApp_iOS()
+
+if __name__ == '__main__':
+  print('Instantiating JumonApp in variable `jumon`..')
+  jumon = jumon_iOS.JumonApp_iOS()

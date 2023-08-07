@@ -1,7 +1,10 @@
+#!/usr/bin/env python3
+# coding: utf-8
 
-import jumon
-import metadata_db
 import getpass
+
+from . import jumon
+from . import metadata_db
 
 class InmemorySecretstore(object):
 

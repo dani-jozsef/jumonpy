@@ -1,9 +1,9 @@
 #!/usr/bin/env python3
 # coding: utf-8
 
-import jumonconfig
-import passgen
-import stringutils as su
+from . import jumonconfig
+from . import passgen
+from . import stringutils as su
 
 class metadata_fields:
   PASSWORD_ITERATION = 'password_iteration'

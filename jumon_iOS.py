@@ -1,10 +1,10 @@
 #!/usr/bin/env python3
 # coding: utf-8
 
-import stringutils as su
-import jumon
-import jumonconfig
-import metadata_db
+from . import stringutils as su
+from . import jumon
+from . import jumonconfig
+from . import metadata_db
 
 # iOS Pythonista specific imports
 import keychain
