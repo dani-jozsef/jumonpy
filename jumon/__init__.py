@@ -1,4 +1,7 @@
 #!/usr/bin/env python3
 # coding: utf-8
 
-__all__ = ['jumon', 'jumon_portable', 'metadata_db', 'totugane64']
+import jumon.totugane64
+import jumon.metadata_db
+import jumon.jumonapp
+import jumon.jumonapp_portable

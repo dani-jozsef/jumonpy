@@ -5,8 +5,9 @@
 # totugane64 encoding
 
 import hashlib
-import stringutils as su
-import totugane64
+
+from . import stringutils as su
+from . import totugane64
 
 _separator = b'_'
 
