@@ -2,9 +2,9 @@
 # coding: utf-8
 
 from . import stringutils as su
-from . import jumon
+from .jumonapp import JumonApp
 from . import jumonconfig
-from . import metadata_db
+from .metadata_db import MetadataDb
 
 # iOS Pythonista specific imports
 import keychain
@@ -44,7 +44,7 @@ class KeychainSecretStore_iOS(object):
       raise KeyError(f'No secret is set in the keychain under {_keychain_service}:{self.keychain_account}')
     return secret
 
-class JumonApp_iOS(jumon.JumonApp):
+class JumonApp_iOS(JumonApp):
   
   def __init__(self,
       iterations=None,
@@ -53,7 +53,7 @@ class JumonApp_iOS(jumon.JumonApp):
       metadata_dbpath=None):
     passphrase = _passphrase_dialog()
     secret_store = KeychainSecretStore_iOS(keychain_account)
-    metadata_store = metadata_db.MetadataDb(metadata_dbpath)
+    metadata_store = MetadataDb(metadata_dbpath)
     super().__init__(passphrase, iterations, fmt_string, secret_store, metadata_store)
 
   def gen_password(self, service, account='', password_iteration=None, fmt_string=None, copy=True):
