@@ -6,7 +6,7 @@ from . import passgen
 from . import stringutils as su
 
 class metadata_fields:
-  PASSWORD_ITERATION = 'password_iteration'
+  PASSWORD_ITERATION = 'iteration'
   FMT_STRING = 'fmt_string'
 
 def _format_spellstring(spellstring, password_iteration, fmt_string):
