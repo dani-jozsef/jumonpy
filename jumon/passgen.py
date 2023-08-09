@@ -30,7 +30,7 @@ def _gen_account_string(service, account, secret):
 
 def gen_spellstring(service, account, passphrase, iterations, secret):
   account_string = _gen_account_string(service, account, secret)
-  passphrase = su.cook_inputstring(passphrase)
+  passphrase = su.cook_inputstring(passphrase, lowercase=False)
   h = gen_hash(
     input=account_string,
     salt=passphrase,
