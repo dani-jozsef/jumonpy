@@ -4,5 +4,5 @@
 from jumon.jumonapp_iOS import JumonApp_iOS
 
 if __name__ == '__main__':
-  print('Instantiating JumonApp in variable `jumon`..')
-  jumon = JumonApp_iOS()
+  print('Instantiating iOS JumonApp in variable `j`..')
+  j = JumonApp_iOS()
