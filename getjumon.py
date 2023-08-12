@@ -20,7 +20,7 @@ INSTALLDIR = "Documents/site-packages/jumon"
 def postinst(install_path):
   homedir = os.path.join(os.environ['HOME'], 'Documents')
   # Create launcher symlink in home directory
-  os.link(os.path.join(install_path, 'iOS_launcher.py'), os.path.join(homedir, 'jumonlauncher.py'))
+  os.symlink(os.path.join(install_path, 'iOS_launcher.py'), os.path.join(homedir, 'jumonlauncher.py'))
   # Create jumonconfig.py in home directory if not already there
   config_path = os.path.join(homedir, 'jumonconfig.py')
   if not os.path.exists(config_path):
