@@ -79,7 +79,7 @@ def install(
 
   print(f"Attempting to remove '{download_path}' and '{expand_path}'")
   os.remove(download_path)
-  os.rmdir(expand_path)
+  shutil.rmtree(expand_path)
   print(" done..")
 
   print("Running post-install script..")
