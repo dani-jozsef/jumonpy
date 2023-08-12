@@ -26,7 +26,7 @@ def postinst(install_path):
   if not os.path.exists(config_path):
     shutil.copy2(os.path.join(install_path, 'jumonconfig_example.py'), config_path)
   # Symlink it to package directory
-  os.link(config_path, install_path)
+  os.link(config_path, os.path.join(install_path, 'jumonconfig.py'))
 
 ##
 
