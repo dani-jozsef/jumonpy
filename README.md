@@ -2,7 +2,7 @@
 
 JumonPy is a simple, pbkdf2_hmac-based deterministic password generator utility.
 
-It allows the generation of mnemonic password bases for any number of services and accounts, including the ability to generate different "iterations" of passwords for a single service/account pair in case a password is compromised and needs to be replaced, making use of a reverse hash chain.
+It allows the generation of mnemonic passwords for any number of services and accounts, including the ability to generate different "iterations" of passwords for a single service/account pair via reverse hash chains, in case a password has to be changed periodically, or for the event of compromise.
 
 The core idea came from old Famicom (Japanese NES) games, which used password systems for 'saving' the game state. Unlike western versions, the Japanese passwords were uncannily mnemonic, thanks to the rather limited syllable set of the Japanese language, and were referred to in Japanese gamer culture as "resurrection spells".
 
@@ -13,6 +13,14 @@ Passwords are generated via pbkdf2, using the totugane64 encoding (see below) to
 To avoid self-harm via similar-looking Unicode characters, all these strings are limited to the ASCII character set (with non-ASCII characters replaced with a placeholder), and the service and account strings are both converted to lowercase.
 
 The generated hash strings are then fed through a simple templating engine to generate passwords in any desired shape, with digits and special characters.
+
+## Installation in the Pythonista3 app
+
+A convenience installer is included. Execute the following command to install the `master` branch:
+
+```
+import requests as r; exec(r.get('https://raw.githubusercontent.com/dani-jozsef/jumonpy/master/getjumon.py').content)
+```
 
 ## How to use
 
