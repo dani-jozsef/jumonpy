@@ -40,7 +40,7 @@ Its use is relatively straightforward from the example included in `jumonconfig_
 
 *Totugane64* is a riff on *base64 standard* encoding, replacing the single-character glyphs with two character syllables taken from Japanese syllabic script (romanized according to *ISO 3602 Strict* romanization, and encoded via ASCII). *Totugane64* possesses prefix property, making decoding cheap, is human readable, pronouncable and highly mnemonic. Ever wanted to memorize an ECDSA private key? Well now you can.
 
-The commonly used Japanese syllables, excluding standalone wovels (ん/n is a standalone wovel too), number exactly 65. That is 64 without を/wo, which is exclusively used as a particle in modern Japanese, ie. it's never part of a modern word. This gives us a very natural use for for を/wo, as the totugane64 equivalent of the padding glyph =.
+The Japanese syllabograms, excluding standalone wovels (ん/n is a standalone wovel too), number exactly 65. That is 64 without を/wo, which is exclusively used as a particle in modern Japanese, ie. it's never part of a modern word. This gives us a very natural use for for を/wo, as the totugane64 equivalent of the padding glyph =.
 
 So the encoding alphabet with 64 glyphs, plus the padding glyph, in gojūon ordering, is:
 
